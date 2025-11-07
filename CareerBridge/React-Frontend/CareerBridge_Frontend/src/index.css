@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bungee&family=Changa+One:ital@0;1&family=Dancing+Script:wght@700&family=Dosis:wght@200..800&family=Gravitas+One&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Luckiest+Guy&family=Michroma&family=Permanent+Marker&family=Prompt&family=Share+Tech&display=swap');
+@import "tailwindcss";
+
+/* ===== Hide Scrollbar but keep scroll functional ===== */
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
+
+/* Optional: Smooth scroll everywhere */
+html {
+  scroll-behavior: smooth;
+}
+
+
+
+body{
+  background:white;
+  margin: 0;
+  padding: 0;
+}
