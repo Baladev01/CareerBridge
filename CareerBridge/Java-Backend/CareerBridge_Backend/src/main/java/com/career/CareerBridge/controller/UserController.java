@@ -112,11 +112,10 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            var userOpt = userService.getUserById(id);
+            // FIXED: userService.getUserById(id) returns User directly, not Optional
+            User user = userService.getUserById(id);
             
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                
+            if (user != null) {
                 Map<String, Object> userData = new HashMap<>();
                 userData.put("id", user.getId());
                 userData.put("firstName", user.getFirstName());
@@ -239,6 +238,4 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
-    
-    // REMOVED: getCurrentUserId() method - it should only be in WithdrawalController
 }

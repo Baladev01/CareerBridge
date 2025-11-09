@@ -2,6 +2,8 @@ package com.career.CareerBridge.service;
 
 import com.career.CareerBridge.entity.User;
 import com.career.CareerBridge.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +14,8 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     @Autowired
     private UserRepository userRepository;
@@ -96,8 +100,21 @@ public class UserService {
         }
     }
 
+    // REMOVE THIS DUPLICATE METHOD - KEEP ONLY ONE getUserById METHOD
+    /*
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
+    }
+    */
+
+    // KEEP THIS METHOD - it returns User object directly (not Optional)
+    public User getUserById(Long userId) {
+        try {
+            return userRepository.findById(userId).orElse(null);
+        } catch (Exception e) {
+            logger.error("Error fetching user by ID {}: {}", userId, e.getMessage());
+            return null;
+        }
     }
 
     public long getUserCount() {

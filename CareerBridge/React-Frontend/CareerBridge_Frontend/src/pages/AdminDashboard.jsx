@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { Link, useNavigate } from 'react-router-dom';
 import { dashboardAPI } from '../services/api';
+import UserDetailsModal from './UserDetailsModal';
 
 ChartJS.register(
   CategoryScale,
@@ -37,10 +38,27 @@ const AdminDashboard = ({ user, onLogout }) => {
   const [jobStats, setJobStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
+  
+  // UserDetailsModal state
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalType, setModalType] = useState('');
+  
+  // Real user data state
+  const [realUserData, setRealUserData] = useState({
+    students: [],
+    employed: [],
+    jobSeekers: [],
+    companies: [],
+    colleges: []
+  });
+  
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchDashboardData();
+    fetchRealUserData();
   }, []);
 
   const fetchDashboardData = async () => {
@@ -48,7 +66,6 @@ const AdminDashboard = ({ user, onLogout }) => {
       setLoading(true);
       console.log('🔄 [AdminDashboard] Fetching dashboard data...');
       
-      // Fetch overview statistics - REAL DATA ONLY
       const overviewResponse = await dashboardAPI.getOverview();
       console.log('📊 [AdminDashboard] Overview response:', overviewResponse);
       
@@ -60,7 +77,7 @@ const AdminDashboard = ({ user, onLogout }) => {
           students: overviewData.totalStudents || 0,
           colleges: overviewData.uniqueColleges || 0,
           companies: overviewData.uniqueCompanies || 0,
-          startups: overviewData.uniqueStartups || 0, // Added startups if available
+          startups: overviewData.uniqueStartups || 0,
           jobedPeople: overviewData.currentlyWorking || 0,
           joblessPeople: Math.max(0, (overviewData.totalEmployees || 0) - (overviewData.currentlyWorking || 0))
         });
@@ -76,7 +93,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         });
       }
 
-      // Fetch education statistics - REAL DATA ONLY
       const educationResponse = await dashboardAPI.getEducationStats();
       console.log('📊 [AdminDashboard] Education stats response:', educationResponse);
       
@@ -88,7 +104,6 @@ const AdminDashboard = ({ user, onLogout }) => {
         setEducationStats({});
       }
 
-      // Fetch job statistics - REAL DATA ONLY
       const jobResponse = await dashboardAPI.getJobStats();
       console.log('📊 [AdminDashboard] Job stats response:', jobResponse);
       
@@ -106,7 +121,6 @@ const AdminDashboard = ({ user, onLogout }) => {
       console.error('💥 [AdminDashboard] Error fetching dashboard data:', error);
       console.error('Error details:', error.response?.data);
       
-      // Set zeros on error - NO MOCK DATA
       setStats({
         students: 0,
         colleges: 0,
@@ -120,6 +134,172 @@ const AdminDashboard = ({ user, onLogout }) => {
     } finally {
       setLoading(false);
     }
+  };
+
+ // Fetch real user data from your APIs
+const fetchRealUserData = async () => {
+  try {
+    console.log('🔄 [AdminDashboard] Fetching real user data...');
+    
+    // Fetch education data (students)
+    const educationResponse = await dashboardAPI.getAllEducationData();
+    const educationData = educationResponse.data.success ? educationResponse.data.data : [];
+    
+    // Fetch job data (employed and job seekers)
+    const jobResponse = await dashboardAPI.getAllJobData();
+    const jobData = jobResponse.data.success ? jobResponse.data.data : [];
+
+    // Helper function to format dates safely
+    const getSafeDate = (dateObj, fallback = new Date()) => {
+      if (!dateObj) return fallback;
+      if (typeof dateObj === 'string') return new Date(dateObj);
+      if (dateObj instanceof Date) return dateObj;
+      if (dateObj.year && dateObj.month && dateObj.day) {
+        return new Date(dateObj.year, dateObj.month - 1, dateObj.day);
+      }
+      return fallback;
+    };
+
+    // Process education data for students
+    const students = educationData.map(edu => {
+      const userCreatedAt = getSafeDate(edu.user?.createdAt || edu.createdAt);
+      const userUpdatedAt = getSafeDate(edu.user?.updatedAt || edu.updatedAt);
+      
+      return {
+        ...edu,
+        name: edu.user?.name || 'Unknown User',
+        email: edu.user?.email || 'No email',
+        phone: edu.user?.phone || '',
+        location: edu.collegeLocation || edu.university || 'Not specified',
+        role: 'Student',
+        type: 'students',
+        // FIX: Add proper dates
+        createdAt: userCreatedAt,
+        updatedAt: userUpdatedAt,
+        joinDate: userCreatedAt,
+        modifiedDate: userUpdatedAt
+      };
+    });
+
+    // Process job data for employed and job seekers
+    const employed = jobData.filter(job => job.currentlyWorking).map(job => {
+      const userCreatedAt = getSafeDate(job.user?.createdAt || job.createdAt);
+      const userUpdatedAt = getSafeDate(job.user?.updatedAt || job.updatedAt);
+      
+      return {
+        ...job,
+        name: job.user?.name || 'Unknown User',
+        email: job.user?.email || 'No email',
+        phone: job.user?.phone || '',
+        location: job.location || 'Not specified',
+        role: job.role || 'Employee',
+        type: 'employed',
+        // FIX: Add proper dates
+        createdAt: userCreatedAt,
+        updatedAt: userUpdatedAt,
+        joinDate: userCreatedAt,
+        modifiedDate: userUpdatedAt
+      };
+    });
+
+    const jobSeekers = jobData.filter(job => !job.currentlyWorking).map(job => {
+      const userCreatedAt = getSafeDate(job.user?.createdAt || job.createdAt);
+      const userUpdatedAt = getSafeDate(job.user?.updatedAt || job.updatedAt);
+      
+      return {
+        ...job,
+        name: job.user?.name || 'Unknown User',
+        email: job.user?.email || 'No email',
+        phone: job.user?.phone || '',
+        location: job.preferredLocation || job.location || 'Not specified',
+        role: job.role || 'Job Seeker',
+        type: 'jobSeekers',
+        // FIX: Add proper dates
+        createdAt: userCreatedAt,
+        updatedAt: userUpdatedAt,
+        joinDate: userCreatedAt,
+        modifiedDate: userUpdatedAt
+      };
+    });
+
+    // Calculate startup employees (small companies)
+    const companyEmployeeCount = {};
+    jobData.forEach(job => {
+      if (job.companyName) {
+        companyEmployeeCount[job.companyName] = (companyEmployeeCount[job.companyName] || 0) + 1;
+      }
+    });
+
+    const startupEmployees = jobData.filter(job => {
+      const company = job.companyName;
+      return company && companyEmployeeCount[company] <= 50;
+    }).map(job => {
+      const userCreatedAt = getSafeDate(job.user?.createdAt || job.createdAt);
+      const userUpdatedAt = getSafeDate(job.user?.updatedAt || job.updatedAt);
+      
+      return {
+        ...job,
+        name: job.user?.name || 'Unknown User',
+        email: job.user?.email || 'No email',
+        phone: job.user?.phone || '',
+        location: job.location || 'Not specified',
+        role: job.role || 'Startup Employee',
+        type: 'startups',
+        // FIX: Add proper dates
+        createdAt: userCreatedAt,
+        updatedAt: userUpdatedAt,
+        joinDate: userCreatedAt,
+        modifiedDate: userUpdatedAt
+      };
+    });
+
+    setRealUserData({
+      students,
+      employed,
+      jobSeekers,
+      companies: employed,
+      colleges: students,
+      startups: startupEmployees
+    });
+
+    console.log('✅ [AdminDashboard] Real user data loaded with dates:', {
+      students: students.length,
+      employed: employed.length,
+      jobSeekers: jobSeekers.length,
+      startups: startupEmployees.length
+    });
+
+  } catch (error) {
+    console.error('💥 [AdminDashboard] Error fetching real user data:', error);
+    setRealUserData({
+      students: [],
+      employed: [],
+      jobSeekers: [],
+      companies: [],
+      colleges: [],
+      startups: []
+    });
+  }
+};
+
+  // UserDetailsModal functions
+  const openUserModal = (users, title, type) => {
+    setSelectedUsers(users);
+    setModalTitle(title);
+    setModalType(type);
+    setIsUserModalOpen(true);
+  };
+
+  const closeUserModal = () => {
+    setIsUserModalOpen(false);
+    setSelectedUsers([]);
+    setModalTitle('');
+    setModalType('');
+  };
+
+  // Get real users by type
+  const getRealUsersByType = (type) => {
+    return realUserData[type] || [];
   };
 
   // Check if we have any real data
@@ -268,12 +448,15 @@ const AdminDashboard = ({ user, onLogout }) => {
     },
   };
 
-  const StatCard = ({ title, value, icon, color, description, hasData }) => (
-    <div className={`
-      bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 
-      transform hover:-translate-y-1 border border-gray-100 relative
-      ${!hasData ? 'opacity-75' : ''}
-    `}>
+  const StatCard = ({ title, value, icon, color, description, hasData, type }) => (
+    <div 
+      className={`
+        bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 
+        transform hover:-translate-y-1 border border-gray-100 relative cursor-pointer
+        ${!hasData ? 'opacity-75' : ''}
+      `}
+      onClick={() => hasData && openUserModal(getRealUsersByType(type), title, type)}
+    >
       {!hasData && (
         <div className="absolute top-2 right-2">
           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
@@ -294,6 +477,11 @@ const AdminDashboard = ({ user, onLogout }) => {
           </p>
           {description && (
             <p className="text-xs text-gray-500 mt-1">{description}</p>
+          )}
+          {hasData && (
+            <p className="text-xs text-blue-500 mt-1">
+              {getRealUsersByType(type).length} users • Click to view
+            </p>
           )}
         </div>
       </div>
@@ -328,6 +516,7 @@ const AdminDashboard = ({ user, onLogout }) => {
 
   const handleRefreshData = () => {
     fetchDashboardData();
+    fetchRealUserData();
   };
 
   if (loading) {
@@ -410,14 +599,16 @@ const AdminDashboard = ({ user, onLogout }) => {
           </div>
         )}
 
+        {/* Statistics Cards - Now Clickable with Real Data */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6 mb-8">
           <StatCard
             title="Total Students"
             value={stats.students}
-            description="Registered in system"
+            description="Education form submissions"
             icon={<i className="fas fa-user-graduate text-indigo-500 text-xl"></i>}
             color="bg-indigo-500"
             hasData={stats.students > 0}
+            type="students"
           />
           <StatCard
             title="Colleges"
@@ -426,6 +617,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             icon={<i className="fas fa-university text-purple-500 text-xl"></i>}
             color="bg-purple-500"
             hasData={stats.colleges > 0}
+            type="colleges"
           />
           <StatCard
             title="Companies"
@@ -434,6 +626,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             icon={<i className="fas fa-building text-green-500 text-xl"></i>}
             color="bg-green-500"
             hasData={stats.companies > 0}
+            type="companies"
           />
           <StatCard
             title="Startups"
@@ -442,6 +635,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             icon={<i className="fas fa-rocket text-yellow-500 text-xl"></i>}
             color="bg-yellow-500"
             hasData={stats.startups > 0}
+            type="startups"
           />
           <StatCard
             title="Employed"
@@ -450,6 +644,7 @@ const AdminDashboard = ({ user, onLogout }) => {
             icon={<i className="fas fa-briefcase text-blue-500 text-xl"></i>}
             color="bg-blue-500"
             hasData={stats.jobedPeople > 0}
+            type="employed"
           />
           <StatCard
             title="Seeking Jobs"
@@ -458,9 +653,40 @@ const AdminDashboard = ({ user, onLogout }) => {
             icon={<i className="fas fa-user-clock text-red-500 text-xl"></i>}
             color="bg-red-500"
             hasData={stats.joblessPeople > 0}
+            type="jobSeekers"
           />
         </div>
 
+        {/* Quick Action Buttons */}
+        {hasRealData && (
+          <div className="flex gap-3 mb-8 flex-wrap justify-center">
+            <button
+              onClick={() => openUserModal(getRealUsersByType('students'), 'Student Analytics', 'students')}
+              className="flex items-center gap-2 px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors shadow-lg hover:shadow-xl"
+            >
+              <i className="fas fa-user-graduate"></i>
+              View All Students ({getRealUsersByType('students').length})
+            </button>
+
+            <button
+              onClick={() => openUserModal(getRealUsersByType('employed'), 'Employed Users Analytics', 'employed')}
+              className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-xl hover:bg-green-600 transition-colors shadow-lg hover:shadow-xl"
+            >
+              <i className="fas fa-briefcase"></i>
+              View Employed Users ({getRealUsersByType('employed').length})
+            </button>
+
+            <button
+              onClick={() => openUserModal(getRealUsersByType('jobSeekers'), 'Job Seekers Analytics', 'jobSeekers')}
+              className="flex items-center gap-2 px-6 py-3 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-colors shadow-lg hover:shadow-xl"
+            >
+              <i className="fas fa-search"></i>
+              View Job Seekers ({getRealUsersByType('jobSeekers').length})
+            </button>
+          </div>
+        )}
+
+        {/* Charts and other components remain the same */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -531,7 +757,7 @@ const AdminDashboard = ({ user, onLogout }) => {
               </h4>
               <p className={`text-sm ${hasRealData ? 'text-blue-700' : 'text-gray-500'}`}>
                 {hasRealData 
-                  ? 'This dashboard displays real statistics collected from user-submitted forms. Data updates automatically as users complete their profiles.'
+                  ? `This dashboard displays real statistics from ${stats.students + stats.jobedPeople + stats.joblessPeople} user submissions. Data updates automatically as users complete their profiles.`
                   : 'No user data has been submitted yet. Statistics will appear here once users start filling out education and job forms.'
                 }
               </p>
@@ -547,7 +773,6 @@ const AdminDashboard = ({ user, onLogout }) => {
               px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl 
               transform hover:-translate-y-1 transition-all duration-300 
               hover:from-indigo-600 hover:to-purple-700 flex items-center justify-center gap-3
-              disabled:opacity-50 disabled:cursor-not-allowed
             ">
               <i className="fas fa-building text-white text-xl"></i>
               View Company Analytics
@@ -561,7 +786,6 @@ const AdminDashboard = ({ user, onLogout }) => {
               px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl 
               transform hover:-translate-y-1 transition-all duration-300 
               hover:from-blue-600 hover:to-cyan-700 flex items-center justify-center gap-3
-              disabled:opacity-50 disabled:cursor-not-allowed
             ">
               <i className="fas fa-university text-white text-xl"></i>
               View College Analytics
@@ -570,6 +794,15 @@ const AdminDashboard = ({ user, onLogout }) => {
           </Link>
         </div>
       </div>
+
+      {/* User Details Modal */}
+      <UserDetailsModal
+        isOpen={isUserModalOpen}
+        onClose={closeUserModal}
+        users={selectedUsers}
+        title={modalTitle}
+        type={modalType}
+      />
     </div>
   );
 };

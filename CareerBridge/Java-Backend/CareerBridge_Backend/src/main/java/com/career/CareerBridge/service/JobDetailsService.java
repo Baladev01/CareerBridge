@@ -1,6 +1,7 @@
 package com.career.CareerBridge.service;
 
 import com.career.CareerBridge.entity.JobDetails;
+
 import com.career.CareerBridge.repository.JobDetailsRepository;
 import com.career.CareerBridge.service.PointsService;
 import com.career.CareerBridge.dto.PointsResponse;
@@ -619,5 +620,28 @@ public class JobDetailsService {
             
             return companyInfo;
         }).collect(Collectors.toList());
+    }
+    
+    public List<JobDetails> getStartupEmployees() {
+        try {
+            List<String> allCompanies = getAllUniqueCompanies();
+            
+            // Filter startups (small companies with <= 50 employees)
+            List<String> startupCompanies = allCompanies.stream()
+                .filter(companyName -> {
+                    List<JobDetails> employees = getByCompanyName(companyName);
+                    return employees != null && employees.size() <= 50;
+                })
+                .collect(Collectors.toList());
+            
+            // Get all employees from startup companies
+            return startupCompanies.stream()
+                .flatMap(company -> getByCompanyName(company).stream())
+                .collect(Collectors.toList());
+                
+        } catch (Exception e) {
+            logger.error("Error fetching startup employees: {}", e.getMessage());
+            return new ArrayList<>();
+        }
     }
 }

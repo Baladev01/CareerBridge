@@ -16,17 +16,29 @@ export const dashboardAPI = {
   
   // Education statistics
   getEducationStats: () => api.get('/dashboard/education/stats'),
+  
+  // Job statistics
   getJobStats: () => api.get('/dashboard/job/stats'),
   
-  // College data
-  getCollegeDashboardData: (collegeName) => api.get(`/dashboard/college/${collegeName}/dashboard`),
+  // All data endpoints for user details modal
+  getAllEducationData: () => api.get('/dashboard/education/all'),
+  getAllJobData: () => api.get('/dashboard/job/all'),
+  getAllStudents: () => api.get('/dashboard/students/all'),
+  getAllEmployed: () => api.get('/dashboard/employed/all'),
+  getAllJobSeekers: () => api.get('/dashboard/jobseekers/all'),
+  
+  // Company and college data
+  getAllCompanies: () => api.get('/dashboard/all-companies'),
   getAllColleges: () => api.get('/dashboard/all-colleges'),
   
-  // Company data
+  // Real-time data
+  getRealTimeOverview: () => api.get('/dashboard/realtime-overview'),
+  
+  // College and company dashboards
+  getCollegeDashboardData: (collegeName) => api.get(`/dashboard/college/${collegeName}/dashboard`),
   getCompanyDashboardData: (companyName) => api.get(`/dashboard/company/${companyName}/dashboard`),
-  getAllCompanies: () => api.get('/dashboard/all-companies'),
-
-  // Comparison data
+  
+  // Comparison endpoints
   getCollegeComparison: (collegeNames) => api.get('/dashboard/colleges/comparison', {
     params: { collegeNames: collegeNames.join(',') }
   }),
@@ -49,7 +61,7 @@ export const educationAPI = {
   getCollegeStats: (collegeName) => api.get(`/education/college/${collegeName}/stats`)
 };
 
-// Enhanced request interceptor
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
     console.log('🔄 API Request:', config.method?.toUpperCase(), config.url);
@@ -61,7 +73,6 @@ api.interceptors.request.use(
         const user = JSON.parse(userData);
         if (user && user.id) {
           config.headers['User-ID'] = user.id.toString();
-          console.log('👤 Added User-ID:', user.id);
         }
       } catch (e) {
         console.error('Error parsing user data:', e);
@@ -76,14 +87,14 @@ api.interceptors.request.use(
   }
 );
 
-// Enhanced response interceptor
+// Response interceptor
 api.interceptors.response.use(
   (response) => {
     console.log('✅ API Success:', response.status, response.config.url);
     return response;
   },
   (error) => {
-    console.error('❌ API Error Details:', {
+    console.error('❌ API Error:', {
       message: error.message,
       code: error.code,
       url: error.config?.url,
@@ -99,4 +110,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;  
+export default api;

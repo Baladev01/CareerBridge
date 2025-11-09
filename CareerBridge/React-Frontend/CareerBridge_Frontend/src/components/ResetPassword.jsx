@@ -285,12 +285,7 @@ const ResetPassword = () => {
                   </button>
                 </form>
 
-                {/* Security Note */}
-                <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                  <p className="text-yellow-700 text-xs text-center">
-                    🔐 Your password will be updated in the database immediately.
-                  </p>
-                </div>
+               
               </>
             )}
           </div>
