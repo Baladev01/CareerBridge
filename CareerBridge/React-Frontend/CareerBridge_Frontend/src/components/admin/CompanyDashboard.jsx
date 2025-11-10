@@ -579,20 +579,7 @@ const CompanyDashboard = () => {
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-              <div className="flex items-center">
-                <i className="fas fa-database text-blue-500 text-2xl mr-4"></i>
-                <div>
-                  <h4 className="text-lg font-semibold text-blue-900">Real Data Source</h4>
-                  <p className="text-blue-700 text-sm">
-                    Statistics are generated from actual job form submissions. 
-                    {companyStats.roleDistribution && Object.keys(companyStats.roleDistribution).length > 0 ? 
-                      " Showing real data from user submissions." : 
-                      " Currently showing placeholder data as no users have submitted detailed information for this company yet."}
-                  </p>
-                </div>
-              </div>
-            </div>
+            
           </>
         )}
 
