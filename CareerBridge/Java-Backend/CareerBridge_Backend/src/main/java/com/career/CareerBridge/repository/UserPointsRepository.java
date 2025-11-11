@@ -24,15 +24,12 @@ public interface UserPointsRepository extends JpaRepository<UserPoints, Long> {
     @Query("SELECT up FROM UserPoints up WHERE up.userId = :userId")
     Optional<UserPoints> findUserPointsByUserId(@Param("userId") Long userId);
     
-    // ✅ WORKING: Use Pageable for pagination (BEST APPROACH)
     @Query("SELECT up FROM UserPoints up ORDER BY up.points DESC, up.lastUpdated DESC")
     List<UserPoints> findTopUsers(org.springframework.data.domain.Pageable pageable);
     
-    // ✅ WORKING: Simple native query without parameters (use this)
     @Query(value = "SELECT * FROM user_points ORDER BY points DESC, last_updated DESC LIMIT 10", nativeQuery = true)
     List<UserPoints> findTop10Users();
     
-    // ✅ WORKING: For dynamic limit, use this approach
     @Query(value = "SELECT * FROM user_points ORDER BY points DESC, last_updated DESC", nativeQuery = true)
     List<UserPoints> findAllUsersNative();
     

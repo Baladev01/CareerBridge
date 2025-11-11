@@ -1,4 +1,3 @@
-// dto/PointsData.java
 package com.career.CareerBridge.dto;
 
 public class PointsData {

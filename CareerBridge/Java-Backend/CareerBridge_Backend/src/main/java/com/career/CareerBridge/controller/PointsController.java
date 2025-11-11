@@ -232,10 +232,7 @@ public class PointsController {
         }
     }
     
-    // TODO: Implement proper authentication to get current user ID
     private Long getCurrentUserId() {
-        // For demo purposes, return a default user ID
-        // In real application, get from SecurityContext or JWT token
-        return 1L; // Replace with actual user ID from authentication
+        return 1L; 
     }
 }

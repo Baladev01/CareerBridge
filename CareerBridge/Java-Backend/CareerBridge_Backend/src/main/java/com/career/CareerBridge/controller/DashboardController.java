@@ -43,13 +43,11 @@ public class DashboardController {
             logger.info("Fetching dashboard overview statistics");
             
             Map<String, Object> overview = new HashMap<>();
-            
-            // Education statistics
+        
             var allEducation = educationService.getAllEducationDetails();
             overview.put("totalStudents", allEducation.size());
             overview.put("uniqueColleges", educationService.getAllUniqueColleges().size());
             
-            // Job statistics
             var allJobs = jobService.getAllJobDetails();
             overview.put("totalEmployees", allJobs.size());
             overview.put("uniqueCompanies", jobService.getAllUniqueCompanies().size());
@@ -57,20 +55,20 @@ public class DashboardController {
                     .filter(job -> job.getCurrentlyWorking() != null && job.getCurrentlyWorking())
                     .count());
             
-            // FIX: Proper startup calculation - consider small companies as startups
+       
             long uniqueStartups = allJobs.stream()
                 .map(JobDetails::getCompanyName)
                 .filter(Objects::nonNull)
                 .distinct()
                 .count();
             
-            // If we have companies, consider some as startups based on employee count
+           
             if (uniqueStartups > 0) {
-                // Count companies with less than 50 employees as startups
+         
                 long startupCount = jobService.getAllUniqueCompanies().stream()
                     .filter(companyName -> {
                         List<JobDetails> companyEmployees = jobService.getByCompanyName(companyName);
-                        return companyEmployees.size() <= 50; // Small companies = startups
+                        return companyEmployees.size() <= 50; 
                     })
                     .count();
                 overview.put("uniqueStartups", startupCount);
@@ -93,9 +91,7 @@ public class DashboardController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
-    // NEW ENDPOINTS FOR ADMIN DASHBOARD
-    
- // Add these methods to your existing DashboardController class
+
 
     @GetMapping("/education/all")
     public ResponseEntity<?> getAllEducationData() {
@@ -104,7 +100,7 @@ public class DashboardController {
             
             List<EducationDetails> allEducation = educationService.getAllEducationDetails();
             
-            // Transform data to include user information
+          
             List<Map<String, Object>> educationData = allEducation.stream().map(edu -> {
                 Map<String, Object> data = new HashMap<>();
                 
@@ -165,7 +161,7 @@ public class DashboardController {
                     data.put("user", userInfo);
                 }
                 
-                // FIX: Ensure dates are properly set
+              
                 data.put("createdAt", edu.getCreatedAt() != null ? edu.getCreatedAt() : LocalDateTime.now());
                 data.put("updatedAt", edu.getUpdatedAt() != null ? edu.getUpdatedAt() : LocalDateTime.now());
                 data.put("joinDate", edu.getCreatedAt() != null ? edu.getCreatedAt() : LocalDateTime.now());
@@ -198,7 +194,7 @@ public class DashboardController {
             
             List<JobDetails> allJobs = jobService.getAllJobDetails();
             
-            // Transform data to include user information
+        
             List<Map<String, Object>> jobData = allJobs.stream().map(job -> {
                 Map<String, Object> data = new HashMap<>();
                 
@@ -233,7 +229,6 @@ public class DashboardController {
                     userInfo.put("name", user.getFirstName() + " " + user.getLastName());
                     userInfo.put("email", user.getEmail());
                     userInfo.put("phone", "");
-                    // FIX: Add user creation date
                     userInfo.put("createdAt", user.getCreatedAt());
                     userInfo.put("updatedAt", user.getUpdatedAt());
                     data.put("user", userInfo);
@@ -243,12 +238,12 @@ public class DashboardController {
                     userInfo.put("name", "Unknown User");
                     userInfo.put("email", "No email available");
                     userInfo.put("phone", "");
-                    userInfo.put("createdAt", job.getCreatedAt()); // Fallback to job date
-                    userInfo.put("updatedAt", job.getUpdatedAt()); // Fallback to job date
+                    userInfo.put("createdAt", job.getCreatedAt());
+                    userInfo.put("updatedAt", job.getUpdatedAt());
                     data.put("user", userInfo);
                 }
                 
-                // FIX: Ensure dates are properly set
+               
                 data.put("createdAt", job.getCreatedAt() != null ? job.getCreatedAt() : LocalDateTime.now());
                 data.put("updatedAt", job.getUpdatedAt() != null ? job.getUpdatedAt() : LocalDateTime.now());
                 data.put("joinDate", job.getCreatedAt() != null ? job.getCreatedAt() : LocalDateTime.now());
@@ -281,7 +276,7 @@ public class DashboardController {
             
             List<EducationDetails> allEducation = educationService.getAllEducationDetails();
             
-            // Transform to student format
+         
             List<Map<String, Object>> students = allEducation.stream().map(edu -> {
                 Map<String, Object> student = new HashMap<>();
                 
@@ -342,7 +337,7 @@ public class DashboardController {
             
             List<JobDetails> allJobs = jobService.getAllJobDetails();
             
-            // Filter currently working users
+        
             List<Map<String, Object>> employed = allJobs.stream()
                 .filter(job -> job.getCurrentlyWorking() != null && job.getCurrentlyWorking())
                 .map(job -> {
@@ -403,7 +398,7 @@ public class DashboardController {
             
             List<JobDetails> allJobs = jobService.getAllJobDetails();
             
-            // Filter job seekers (not currently working)
+         
             List<Map<String, Object>> jobSeekers = allJobs.stream()
                 .filter(job -> job.getCurrentlyWorking() == null || !job.getCurrentlyWorking())
                 .map(job -> {
@@ -635,16 +630,16 @@ public class DashboardController {
                         logger.info("Company: {}, Employees: {}, Current: {}", company, employeeCount, currentEmployees);
                     } catch (Exception e) {
                         logger.warn("Error processing company {}: {}", company, e.getMessage());
-                        // Continue with next company
+
                     }
                 }
             }
             
-            // If we have very few companies, add some default ones from your existing data
+        
             if (companyList.size() < 2) {
                 logger.info("Very few companies found, adding default companies from existing data");
                 
-                // Add companies from your existing data
+             
                 if (companies != null) {
                     for (String company : companies) {
                         if (!companyList.stream().anyMatch(c -> c.get("name").equals(company))) {
@@ -708,12 +703,12 @@ public class DashboardController {
                 }
             }
             
-            // If we have very few colleges, ensure we return at least the ones we have
+          
             if (collegeList.isEmpty() && colleges != null) {
                 for (String college : colleges) {
                     Map<String, Object> collegeInfo = new HashMap<>();
                     collegeInfo.put("name", college);
-                    collegeInfo.put("studentCount", 1); // Default count
+                    collegeInfo.put("studentCount", 1); 
                     collegeList.add(collegeInfo);
                 }
             }
@@ -736,7 +731,7 @@ public class DashboardController {
         }
     }
     
-    // Real-time college statistics
+ 
     @GetMapping("/college/{collegeName}/realtime-stats")
     public ResponseEntity<?> getRealTimeCollegeStats(@PathVariable String collegeName) {
         try {
@@ -756,7 +751,7 @@ public class DashboardController {
         }
     }
     
-    // Real-time company statistics
+   
     @GetMapping("/company/{companyName}/realtime-stats")
     public ResponseEntity<?> getRealTimeCompanyStats(@PathVariable String companyName) {
         try {
@@ -776,13 +771,13 @@ public class DashboardController {
         }
     }
     
-    // Real-time overview with latest data
+  
     @GetMapping("/realtime-overview")
     public ResponseEntity<?> getRealTimeOverview() {
         try {
             Map<String, Object> overview = new HashMap<>();
             
-            // Real-time education stats
+          
             List<EducationDetails> allEducation = educationService.getAllEducationDetails();
             overview.put("totalStudents", allEducation.size());
             overview.put("uniqueColleges", educationService.getAllUniqueColleges().size());
@@ -790,7 +785,7 @@ public class DashboardController {
                     .filter(e -> e.getCurrentlyStudying() != null && e.getCurrentlyStudying())
                     .count());
             
-            // Real-time job stats
+           
             List<JobDetails> allJobs = jobService.getAllJobDetails();
             overview.put("totalEmployees", allJobs.size());
             overview.put("uniqueCompanies", jobService.getAllUniqueCompanies().size());
@@ -798,7 +793,7 @@ public class DashboardController {
                     .filter(j -> j.getCurrentlyWorking() != null && j.getCurrentlyWorking())
                     .count());
             
-            // Latest updates
+        
             overview.put("lastEducationUpdate", allEducation.stream()
                     .map(EducationDetails::getUpdatedAt)
                     .filter(Objects::nonNull)

@@ -1,4 +1,3 @@
-// AdminForgotPasswordRequest.java
 package com.career.CareerBridge.dto;
 
 public class AdminForgotPasswordRequest {

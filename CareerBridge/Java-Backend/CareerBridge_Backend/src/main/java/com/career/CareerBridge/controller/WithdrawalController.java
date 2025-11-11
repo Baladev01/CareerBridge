@@ -1,4 +1,3 @@
-// controller/WithdrawalController.java
 package com.career.CareerBridge.controller;
 
 import com.career.CareerBridge.entity.Withdrawal;
@@ -35,16 +34,13 @@ public class WithdrawalController {
         try {
             logger.info("=== WITHDRAWAL REQUEST ===");
             
-            // Extract user ID from request
             Long userId = extractUserIdFromRequest(request);
             logger.info("Processing withdrawal request for User ID: {}", userId);
             
-            // Validate withdrawal request
             if (!withdrawalRequest.containsKey("amount") || !withdrawalRequest.containsKey("pointsUsed") || !withdrawalRequest.containsKey("paymentMethod")) {
                 return errorResponse("Amount, pointsUsed, and paymentMethod are required");
             }
             
-            // Parse and validate amount
             Double amount;
             try {
                 amount = Double.valueOf(withdrawalRequest.get("amount").toString());
@@ -52,7 +48,6 @@ public class WithdrawalController {
                 return errorResponse("Invalid amount format");
             }
             
-            // Parse and validate points
             Integer pointsUsed;
             try {
                 pointsUsed = Integer.valueOf(withdrawalRequest.get("pointsUsed").toString());
@@ -62,7 +57,6 @@ public class WithdrawalController {
             
             String paymentMethod = withdrawalRequest.get("paymentMethod").toString();
             
-            // Validate minimum amount
             if (amount < 50) {
                 return errorResponse("Minimum withdrawal amount is ₹50");
             }
@@ -71,10 +65,8 @@ public class WithdrawalController {
                 return errorResponse("Points used must be greater than 0");
             }
             
-            // Create withdrawal entity
             Withdrawal withdrawal = new Withdrawal(userId, amount, pointsUsed, paymentMethod);
             
-            // Handle bank details
             if ("bank".equals(paymentMethod)) {
                 if (!withdrawalRequest.containsKey("bankDetails")) {
                     return errorResponse("Bank details are required for bank transfer");
@@ -110,7 +102,6 @@ public class WithdrawalController {
                 return errorResponse("Invalid payment method");
             }
             
-            // Save withdrawal
             Withdrawal savedWithdrawal = withdrawalService.createWithdrawal(withdrawal);
             
             Map<String, Object> response = new HashMap<>();
@@ -171,7 +162,6 @@ public class WithdrawalController {
         }
     }
 
-    // Admin endpoints
     @GetMapping("/all")
     public ResponseEntity<?> getAllWithdrawals() {
         try {
@@ -237,7 +227,6 @@ public class WithdrawalController {
         try {
             logger.info("🔍 Extracting User ID from request...");
             
-            // Check header first
             String userIdHeader = request.getHeader("User-ID");
             logger.info("User-ID header value: {}", userIdHeader);
             
@@ -247,7 +236,6 @@ public class WithdrawalController {
                 return userId;
             }
             
-            // Check parameter as fallback
             String userIdParam = request.getParameter("userId");
             logger.info("User-ID parameter value: {}", userIdParam);
             
@@ -257,7 +245,6 @@ public class WithdrawalController {
                 return userId;
             }
             
-            // Log all headers for debugging
             java.util.Enumeration<String> headerNames = request.getHeaderNames();
             while (headerNames.hasMoreElements()) {
                 String headerName = headerNames.nextElement();

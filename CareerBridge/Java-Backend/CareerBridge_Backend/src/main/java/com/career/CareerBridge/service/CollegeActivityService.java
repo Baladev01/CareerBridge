@@ -29,7 +29,6 @@ public class CollegeActivityService {
     }
     
     public CollegeActivity saveActivity(CollegeActivity activity, MultipartFile certificate) throws IOException {
-        // Handle certificate upload
         if (certificate != null && !certificate.isEmpty()) {
             String certificatePath = storeFile(certificate, "activity_certificate");
             activity.setCertificatePath(certificatePath);

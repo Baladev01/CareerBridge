@@ -75,7 +75,6 @@ public class UserController {
             if (loginResult.containsKey("user")) {
                 User user = (User) loginResult.get("user");
                 
-                // Create user response
                 Map<String, Object> userData = new HashMap<>();
                 userData.put("id", user.getId());
                 userData.put("firstName", user.getFirstName());
@@ -112,7 +111,6 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         
         try {
-            // FIXED: userService.getUserById(id) returns User directly, not Optional
             User user = userService.getUserById(id);
             
             if (user != null) {

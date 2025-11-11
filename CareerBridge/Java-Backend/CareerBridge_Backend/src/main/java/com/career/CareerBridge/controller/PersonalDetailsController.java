@@ -44,18 +44,15 @@ public class PersonalDetailsController {
         try {
             logger.info("=== PERSONAL DETAILS SAVE REQUEST ===");
             
-            // Extract user ID from request
+           
             Long userId = extractUserIdFromRequest(request);
             logger.info("Processing request for User ID: {}", userId);
             
-            // Parse JSON to PersonalDetails
             PersonalDetails details = objectMapper.readValue(detailsJson, PersonalDetails.class);
             details.setUserId(userId);
             
-            // ✅ FIXED: Always give 10 points for form submission (remove first-time check)
             PersonalDetails savedDetails = personalDetailsService.savePersonalDetails(details, profilePhoto);
             
-            // ✅ ADD POINTS: 10 points for personal form submission (ALWAYS)
             PointsResponse pointsResponse = pointsService.addPoints(
                 userId, 
                 "personal_form", 
@@ -88,12 +85,10 @@ public class PersonalDetailsController {
             logger.info("=== UPDATE PERSONAL DETAILS REQUEST ===");
             logger.info("Updating personal details for User ID: {}", details.getUserId());
             
-            // Find existing record
             Optional<PersonalDetails> existingOpt = personalDetailsService.getPersonalDetailsByUserId(details.getUserId());
             
             if (existingOpt.isPresent()) {
                 PersonalDetails existing = existingOpt.get();
-                // Update fields
                 if (details.getName() != null) existing.setName(details.getName());
                 if (details.getEmail() != null) existing.setEmail(details.getEmail());
                 if (details.getPhone() != null) existing.setPhone(details.getPhone());
@@ -110,7 +105,6 @@ public class PersonalDetailsController {
                 existing.setUpdatedAt(LocalDateTime.now());
                 PersonalDetails updated = personalDetailsService.updatePersonalDetails(existing);
                 
-                // ✅ ADD POINTS: 10 points for personal form update
                 PointsResponse pointsResponse = pointsService.addPoints(
                     details.getUserId(), 
                     "personal_update", 
@@ -240,7 +234,6 @@ public class PersonalDetailsController {
     }
     
     private Long extractUserIdFromRequest(HttpServletRequest request) {
-        // Check header first
         String userIdHeader = request.getHeader("User-ID");
         if (userIdHeader != null) {
             try {
@@ -252,7 +245,6 @@ public class PersonalDetailsController {
             }
         }
         
-        // Check parameter as fallback
         String userIdParam = request.getParameter("userId");
         if (userIdParam != null) {
             try {
@@ -264,7 +256,6 @@ public class PersonalDetailsController {
             }
         }
         
-        // For development, you might want to require user ID
         throw new IllegalArgumentException("User ID is required in header or parameter");
     }
     

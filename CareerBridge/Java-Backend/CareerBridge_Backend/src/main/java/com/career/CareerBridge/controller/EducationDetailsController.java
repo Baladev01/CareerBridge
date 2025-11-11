@@ -50,15 +50,15 @@ public class EducationDetailsController {
         try {
             logger.info("=== EDUCATION DETAILS SAVE REQUEST ===");
             
-            // Extract user ID from request
+           
             Long userId = extractUserIdFromRequest(request);
             logger.info("Processing request for User ID: {}", userId);
             
-            // Parse JSON to EducationDetails
+            
             EducationDetails details = objectMapper.readValue(detailsJson, EducationDetails.class);
             details.setUserId(userId);
             
-            // Handle activity certificates
+           
             Map<Integer, MultipartFile> activityCertificates = new HashMap<>();
             addActivityCertificateIfPresent(activityCertificates, 0, activityCertificate0);
             addActivityCertificateIfPresent(activityCertificates, 1, activityCertificate1);
@@ -70,7 +70,7 @@ public class EducationDetailsController {
             EducationDetails savedDetails = educationDetailsService.saveEducationDetails(
                 details, tenthMarksheet, twelfthMarksheet, activityCertificates);
             
-            // ✅ ADD POINTS: 10 points for education form submission (ALWAYS)
+         
             PointsResponse pointsResponse = pointsService.addPoints(
                 userId, 
                 "education_form", 
@@ -106,7 +106,6 @@ public class EducationDetailsController {
             
             if (existingOpt.isPresent()) {
                 EducationDetails existing = existingOpt.get();
-                // Update fields
                 if (details.getCollegeName() != null) existing.setCollegeName(details.getCollegeName());
                 if (details.getDegree() != null) existing.setDegree(details.getDegree());
                 if (details.getSpecialization() != null) existing.setSpecialization(details.getSpecialization());
@@ -117,7 +116,6 @@ public class EducationDetailsController {
                 existing.setUpdatedAt(LocalDateTime.now());
                 EducationDetails updated = educationDetailsService.updateEducationDetails(existing);
                 
-                // ✅ ADD POINTS: 10 points for education form update
                 PointsResponse pointsResponse = pointsService.addPoints(
                     details.getUserId(), 
                     "education_update", 
@@ -246,7 +244,6 @@ public class EducationDetailsController {
         }
     }
 
-    // NEW ENDPOINT: Get users by college name for dashboard
     @GetMapping("/college/{collegeName}")
     public ResponseEntity<?> getUsersByCollege(@PathVariable String collegeName) {
         try {
@@ -270,7 +267,6 @@ public class EducationDetailsController {
         }
     }
 
-    // NEW ENDPOINT: Get all unique colleges for dropdown
     @GetMapping("/colleges")
     public ResponseEntity<?> getAllColleges() {
         try {
@@ -294,7 +290,6 @@ public class EducationDetailsController {
         }
     }
 
-    // NEW ENDPOINT: Get college statistics
     @GetMapping("/college/{collegeName}/stats")
     public ResponseEntity<?> getCollegeStats(@PathVariable String collegeName) {
         try {
@@ -318,7 +313,6 @@ public class EducationDetailsController {
     }
     
     private Long extractUserIdFromRequest(HttpServletRequest request) {
-        // Check header first
         String userIdHeader = request.getHeader("User-ID");
         if (userIdHeader != null) {
             try {
@@ -330,7 +324,6 @@ public class EducationDetailsController {
             }
         }
         
-        // Check parameter as fallback
         String userIdParam = request.getParameter("userId");
         if (userIdParam != null) {
             try {
@@ -342,7 +335,6 @@ public class EducationDetailsController {
             }
         }
         
-        // For development, you might want to require user ID
         throw new IllegalArgumentException("User ID is required in header or parameter");
     }
     

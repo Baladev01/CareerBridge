@@ -1,4 +1,3 @@
-// config/CorsConfig.java
 package com.career.CareerBridge.config;
 
 import org.springframework.context.annotation.Bean;

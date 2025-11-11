@@ -156,7 +156,6 @@ public class PointsServiceImpl implements PointsService {
         try {
             System.out.println("🏆 Getting leaderboard with limit: " + limit);
             
-            // Use Pageable approach (RECOMMENDED)
             Pageable pageable = PageRequest.of(0, limit);
             List<UserPoints> topUsers = userPointsRepository.findTopUsers(pageable);
             
@@ -175,7 +174,6 @@ public class PointsServiceImpl implements PointsService {
         } catch (Exception e) {
             System.err.println("💥 ERROR getting leaderboard with Pageable: " + e.getMessage());
             
-            // Fallback to manual method
             return getLeaderboardManual(limit);
         }
     }
@@ -185,10 +183,8 @@ public class PointsServiceImpl implements PointsService {
         try {
             System.out.println("🏆 Getting leaderboard with manual limit: " + limit);
             
-            // Get all users and apply limit manually
             List<UserPoints> allUsers = userPointsRepository.findAllOrderByPointsDesc();
             
-            // Apply limit
             List<UserPoints> topUsers = allUsers.stream()
                 .limit(limit)
                 .collect(Collectors.toList());
@@ -215,7 +211,6 @@ public class PointsServiceImpl implements PointsService {
     public Integer calculatePoints(String activityType) {
         System.out.println("🎯 Calculating points for activity: " + activityType);
         
-        // Only personal, education, and job forms give 10 points each for both first-time and updates
         switch (activityType.toLowerCase()) {
             case "personal_form":
                 return 10;
@@ -257,37 +252,31 @@ public class PointsServiceImpl implements PointsService {
 
 	@Override
 	public boolean deductPointsForWithdrawal(Long userId, Integer points, String description) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean addPointsDirect(Long userId, Integer points, String description) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public double getCashValue(Integer points) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public Integer getPointsRequiredForAmount(double amount) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Map<String, Object> getPointsOverview(Long userId) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public PointsResponse deductPoints(Long userId, Integer points, String description) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

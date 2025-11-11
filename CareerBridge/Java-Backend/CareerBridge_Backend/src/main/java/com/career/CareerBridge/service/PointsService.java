@@ -19,7 +19,6 @@ public interface PointsService {
     String calculateRank(Integer points);
     Integer calculateLevel(Integer points);
     
-    // New methods for withdrawal integration
     boolean deductPointsForWithdrawal(Long userId, Integer points, String description);
     boolean addPointsDirect(Long userId, Integer points, String description);
     double getCashValue(Integer points);

@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface EducationDetailsRepository extends JpaRepository<EducationDetails, Integer> {
     
-    // Find first education record for a user (most recent)
+    // Find first education record for a user ( recent)
     Optional<EducationDetails> findFirstByUserIdOrderByCreatedAtDesc(Long userId);
     
     // Find all education records for a user

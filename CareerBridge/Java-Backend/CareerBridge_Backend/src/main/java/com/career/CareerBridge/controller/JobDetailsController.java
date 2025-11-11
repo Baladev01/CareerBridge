@@ -47,15 +47,13 @@ public class JobDetailsController {
         try {
             logger.info("=== JOB DETAILS SAVE REQUEST ===");
             
-            // Extract user ID from request
+            
             Long userId = extractUserIdFromRequest(request);
             logger.info("Processing request for User ID: {}", userId);
             
-            // Parse JSON to JobDetails
             JobDetails details = objectMapper.readValue(detailsJson, JobDetails.class);
             details.setUserId(userId);
             
-            // Validate required fields
             if (details.getCompanyName() == null || details.getCompanyName().trim().isEmpty()) {
                 return errorResponse("Company name is required");
             }
@@ -101,12 +99,10 @@ public class JobDetailsController {
                 return errorResponse("User ID is required");
             }
             
-            // Find existing record
             Optional<JobDetails> existingOpt = jobDetailsService.getJobDetailsByUserId(details.getUserId());
             
             if (existingOpt.isPresent()) {
                 JobDetails existing = existingOpt.get();
-                // Update fields
                 if (details.getCompanyName() != null) existing.setCompanyName(details.getCompanyName());
                 if (details.getRole() != null) existing.setRole(details.getRole());
                 if (details.getExperience() != null) existing.setExperience(details.getExperience());
@@ -229,7 +225,6 @@ public class JobDetailsController {
         }
     }
 
-    // NEW ENDPOINT: Get users by company name for dashboard
     @GetMapping("/company/{companyName}")
     public ResponseEntity<?> getUsersByCompany(@PathVariable String companyName) {
         try {
@@ -253,7 +248,6 @@ public class JobDetailsController {
         }
     }
 
-    // NEW ENDPOINT: Get all unique companies for dropdown
     @GetMapping("/companies")
     public ResponseEntity<?> getAllCompanies() {
         try {
@@ -277,7 +271,6 @@ public class JobDetailsController {
         }
     }
 
-    // NEW ENDPOINT: Get company statistics
     @GetMapping("/company/{companyName}/stats")
     public ResponseEntity<?> getCompanyStats(@PathVariable String companyName) {
         try {
@@ -301,7 +294,6 @@ public class JobDetailsController {
     }
     
     private Long extractUserIdFromRequest(HttpServletRequest request) {
-        // Check header first
         String userIdHeader = request.getHeader("User-ID");
         if (userIdHeader != null) {
             try {
@@ -313,7 +305,6 @@ public class JobDetailsController {
             }
         }
         
-        // Check parameter as fallback
         String userIdParam = request.getParameter("userId");
         if (userIdParam != null) {
             try {
@@ -325,7 +316,6 @@ public class JobDetailsController {
             }
         }
         
-        // For development, you might want to require user ID
         throw new IllegalArgumentException("User ID is required in header or parameter");
     }
     

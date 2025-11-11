@@ -1,4 +1,3 @@
-// service/BankAccountService.java
 package com.career.CareerBridge.service;
 
 import com.career.CareerBridge.entity.BankAccount;
@@ -21,12 +20,10 @@ public class BankAccountService {
 
     public BankAccount saveBankAccount(BankAccount bankAccount) {
         try {
-            // Check if account already exists
             if (bankAccountRepository.existsByUserIdAndAccountNumber(bankAccount.getUserId(), bankAccount.getAccountNumber())) {
                 throw new RuntimeException("Bank account already exists for this user");
             }
 
-            // Check if this is the first account, set as default
             long accountCount = bankAccountRepository.countByUserId(bankAccount.getUserId());
             if (accountCount == 0) {
                 bankAccount.setIsDefault(true);
@@ -79,14 +76,12 @@ public class BankAccountService {
     }
 
     public BankAccount setDefaultBankAccount(Long accountId, Long userId) {
-        // First, set all accounts as non-default
         List<BankAccount> userAccounts = bankAccountRepository.findByUserIdOrderByCreatedAtDesc(userId);
         for (BankAccount account : userAccounts) {
             account.setIsDefault(false);
         }
         bankAccountRepository.saveAll(userAccounts);
 
-        // Then set the specified account as default
         Optional<BankAccount> accountOpt = bankAccountRepository.findByIdAndUserId(accountId, userId);
         if (accountOpt.isPresent()) {
             BankAccount account = accountOpt.get();

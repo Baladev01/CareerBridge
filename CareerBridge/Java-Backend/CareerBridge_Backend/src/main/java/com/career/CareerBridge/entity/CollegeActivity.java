@@ -1,4 +1,3 @@
-// CollegeActivity.java
 package com.career.CareerBridge.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

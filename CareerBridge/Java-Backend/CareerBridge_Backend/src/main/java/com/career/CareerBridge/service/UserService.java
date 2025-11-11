@@ -25,13 +25,11 @@ public class UserService {
         try {
             System.out.println("📝 Starting registration for: " + user.getEmail());
             
-            // Check if email already exists
             if (userRepository.findByEmail(user.getEmail()).isPresent()) {
                 System.out.println("❌ Email already exists: " + user.getEmail());
                 return false;
             }
 
-            // Ensure all required fields are set
             if (user.getIsActive() == null) {
                 user.setIsActive(true);
             }
@@ -54,7 +52,7 @@ public class UserService {
         } catch (Exception e) {
             System.err.println("💥 Registration error for " + user.getEmail() + ": " + e.getMessage());
             e.printStackTrace();
-            throw e; // Re-throw to see the actual error
+            throw e; 
         }
     }
 
@@ -100,14 +98,8 @@ public class UserService {
         }
     }
 
-    // REMOVE THIS DUPLICATE METHOD - KEEP ONLY ONE getUserById METHOD
-    /*
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
-    }
-    */
-
-    // KEEP THIS METHOD - it returns User object directly (not Optional)
+    
+  
     public User getUserById(Long userId) {
         try {
             return userRepository.findById(userId).orElse(null);

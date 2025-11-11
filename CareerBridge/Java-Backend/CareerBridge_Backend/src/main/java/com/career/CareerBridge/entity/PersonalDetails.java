@@ -19,11 +19,9 @@ public class PersonalDetails {
     @Column(name = "user_id", nullable = false)
     private Long userId;
     
- // Documents - Updated for better profile photo handling
     @Column(name = "profile_photo_path")
     private String profilePhotoPath;
 
-    // New field for direct profile photo URL access
     @Transient
     private String profilePhoto;
 
@@ -184,16 +182,13 @@ public class PersonalDetails {
     public void setProfilePhotoPath(String profilePhotoPath) { this.profilePhotoPath = profilePhotoPath; }
 
     
-    // ✅ ENHANCED: Getter for profile photo with full URL
     public String getProfilePhoto() {
         if (this.profilePhotoPath != null && !this.profilePhotoPath.trim().isEmpty()) {
-            // Use the FileController endpoint with proper URL construction
             return "http://localhost:8080/api/files/personal-documents/" + this.profilePhotoPath;
         }
-        return this.profilePhoto; // Return transient field if set
+        return this.profilePhoto; 
     }
     
-    // ✅ ENHANCED: Setter for profile photo (for JSON deserialization)
     public void setProfilePhoto(String profilePhoto) {
         this.profilePhoto = profilePhoto;
     }

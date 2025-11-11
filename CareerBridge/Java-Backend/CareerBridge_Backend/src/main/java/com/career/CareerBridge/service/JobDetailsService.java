@@ -318,29 +318,23 @@ public class JobDetailsService {
             companyData.put("averageExperience", experienceCount > 0 ? 
                 Math.round((totalExperience / experienceCount) * 100.0) / 100.0 : 0);
             
-            // Skills analysis from ACTUAL skills_used data
             Map<String, Integer> skillStats = analyzeRealSkills(companyEmployees);
             companyData.put("skillStats", skillStats);
             
-            // Hiring trend from ACTUAL start_date data
             Map<Integer, Integer> hiringTrend = calculateRealHiringTrend(companyEmployees);
             companyData.put("hiringTrend", hiringTrend);
             
-            // Performance metrics based on ACTUAL data only
             double performanceRating = calculateRealCompanyPerformance(companyEmployees);
             companyData.put("performanceRating", Math.round(performanceRating));
             
-            // Market share based on ACTUAL employee count
             double marketShare = calculateRealMarketShare(companyEmployees.size());
             companyData.put("marketShare", Math.round(marketShare * 100.0) / 100.0);
             
-            // Growth rate from ACTUAL hiring trend
             double growthRate = calculateRealGrowthRate(hiringTrend);
             companyData.put("growthRate", Math.round(growthRate * 100.0) / 100.0);
             
         } catch (Exception e) {
             logger.error("Error getting company dashboard data for {}: {}", companyName, e.getMessage());
-            // Return empty data instead of mock data
             companyData.put("totalEmployees", 0);
             companyData.put("currentEmployees", 0);
             companyData.put("averageExperience", 0);
@@ -462,8 +456,6 @@ public class JobDetailsService {
     }
 
     private double calculateRealMarketShare(int employeeCount) {
-        // Simple calculation based on employee count
-        // You can adjust this formula based on your industry
         if (employeeCount == 0) return 0;
         return (employeeCount / 1000.0) * 2.0; // Example: 100 employees = 0.2% market share
     }

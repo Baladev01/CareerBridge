@@ -21,5 +21,4 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User u SET u.isNewUser = false WHERE u.id = :userId")
     void markAsExistingUser(@Param("userId") Long userId);
     
-    // Remove all points-related methods
 }

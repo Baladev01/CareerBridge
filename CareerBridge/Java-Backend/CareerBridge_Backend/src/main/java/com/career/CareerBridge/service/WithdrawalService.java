@@ -1,4 +1,3 @@
-// service/WithdrawalService.java
 package com.career.CareerBridge.service;
 
 import com.career.CareerBridge.entity.Withdrawal;
@@ -24,14 +23,11 @@ public class WithdrawalService {
 
     public Withdrawal createWithdrawal(Withdrawal withdrawal) {
         try {
-            // Validate withdrawal request first
             validateWithdrawalRequest(withdrawal);
             
-            // Generate unique transaction ID
             String transactionId = "TXN" + System.currentTimeMillis() + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             withdrawal.setTransactionId(transactionId);
             
-            // ✅ GUARANTEED MIX: Alternate between PENDING and APPROVED
             String status = getAlternatingStatus();
             withdrawal.setStatus(status);
             withdrawal.setCreatedAt(LocalDateTime.now());
@@ -124,52 +120,40 @@ public class WithdrawalService {
         throw new RuntimeException("Withdrawal not found with ID: " + withdrawalId);
     }
     
-    /**
-     * Guaranteed alternating status - Perfect 50/50 mix
-     */
+    
     private String getAlternatingStatus() {
-        // Alternate between PENDING and APPROVED
         lastStatusWasPending = !lastStatusWasPending;
         return lastStatusWasPending ? "PENDING" : "APPROVED";
     }
     
-    /**
-     * Alternative: Use timestamp to decide status (more random but still mixed)
-     */
+   
     private String getTimeBasedStatus() {
-        // Use milliseconds to decide - gives good mix
         long millis = System.currentTimeMillis();
         return (millis % 2 == 0) ? "PENDING" : "APPROVED";
     }
     
     public void validateWithdrawalRequest(Withdrawal withdrawal) {
-        // Validate user exists (you might want to check against user service)
         if (withdrawal.getUserId() == null) {
             throw new RuntimeException("User ID is required");
         }
         
-        // Validate amount
         if (withdrawal.getAmount() == null || withdrawal.getAmount() < 50) {
             throw new RuntimeException("Minimum withdrawal amount is ₹50");
         }
         
-        // Validate points
         if (withdrawal.getPointsUsed() == null || withdrawal.getPointsUsed() <= 0) {
             throw new RuntimeException("Points used must be greater than 0");
         }
         
-        // Validate payment method
         if (!"bank".equals(withdrawal.getPaymentMethod()) && !"upi".equals(withdrawal.getPaymentMethod())) {
             throw new RuntimeException("Invalid payment method");
         }
         
-        // Validate bank details for bank transfer
         if ("bank".equals(withdrawal.getPaymentMethod()) && 
             (withdrawal.getBankDetails() == null || withdrawal.getBankDetails().trim().isEmpty())) {
             throw new RuntimeException("Bank details are required for bank transfer");
         }
         
-        // Validate UPI ID for UPI transfer
         if ("upi".equals(withdrawal.getPaymentMethod()) && 
             (withdrawal.getUpiId() == null || withdrawal.getUpiId().trim().isEmpty() || !withdrawal.getUpiId().contains("@"))) {
             throw new RuntimeException("Valid UPI ID is required for UPI transfer");

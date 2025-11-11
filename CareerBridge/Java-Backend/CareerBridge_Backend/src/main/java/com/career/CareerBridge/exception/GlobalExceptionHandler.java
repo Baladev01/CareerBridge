@@ -1,4 +1,3 @@
-// exception/GlobalExceptionHandler.java
 package com.career.CareerBridge.exception;
 
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,3 @@
-// CollegeActivityController.java
 package com.career.CareerBridge.controller;
 
 import com.career.CareerBridge.entity.CollegeActivity;

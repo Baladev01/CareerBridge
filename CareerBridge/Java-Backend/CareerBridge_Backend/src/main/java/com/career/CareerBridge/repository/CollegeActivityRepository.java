@@ -1,4 +1,3 @@
-// CollegeActivityRepository.java
 package com.career.CareerBridge.repository;
 
 import com.career.CareerBridge.entity.CollegeActivity;

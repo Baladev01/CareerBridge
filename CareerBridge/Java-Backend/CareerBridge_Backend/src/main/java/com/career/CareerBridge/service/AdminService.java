@@ -1,4 +1,3 @@
-// AdminService.java
 package com.career.CareerBridge.service;
 
 import com.career.CareerBridge.entity.Admin;
@@ -24,7 +23,6 @@ public class AdminService {
         try {
             System.out.println("🔧 Starting admin registration for: " + admin.getEmail());
             
-            // Check if email already exists
             if (adminRepository.findByEmail(admin.getEmail()).isPresent()) {
                 result.put("success", false);
                 result.put("message", "Email already exists!");
@@ -32,7 +30,6 @@ public class AdminService {
                 return result;
             }
 
-            // Set default values for new admin
             admin.setRole("admin");
             admin.setIsActive(true);
             admin.setCreatedAt(LocalDateTime.now());
@@ -148,7 +145,7 @@ public class AdminService {
     public Integer getAdminPoints(Long adminId) {
         try {
             Optional<Admin> adminOpt = adminRepository.findById(adminId);
-            return adminOpt.map(admin -> 100).orElse(0); // Default points for admin
+            return adminOpt.map(admin -> 100).orElse(0); 
         } catch (Exception e) {
             System.err.println("Error getting admin points: " + e.getMessage());
             return 0;

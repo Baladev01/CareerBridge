@@ -19,7 +19,6 @@ public class JobDetails {
     @Column(name = "user_id", nullable = false)
     private Long userId;
     
-    // Basic Job Details
     @Column(name = "company_name", nullable = false)
     private String companyName;
     
@@ -33,7 +32,6 @@ public class JobDetails {
     
     private String industry;
 
-    // Employment Details - CHANGED TO STRING
     @Column(name = "start_date")
     private String startDate;
     
@@ -47,7 +45,6 @@ public class JobDetails {
     
     private String location;
 
-    // Job Description
     @Column(columnDefinition = "TEXT", name = "job_description")
     private String jobDescription;
 
@@ -57,7 +54,6 @@ public class JobDetails {
     @Column(columnDefinition = "TEXT")
     private String achievements;
 
-    // References & Contacts
     @Column(name = "manager_name")
     private String managerName;
     
@@ -67,7 +63,6 @@ public class JobDetails {
     @Column(name = "hr_contact")
     private String hrContact;
 
-    // Documents
     @Column(name = "resume_path")
     private String resumePath;
     
@@ -77,7 +72,6 @@ public class JobDetails {
     @Column(name = "experience_letter_path")
     private String experienceLetterPath;
 
-    // Additional Information
     @Column(name = "notice_period")
     private String noticePeriod;
     
@@ -126,16 +120,13 @@ public class JobDetails {
     public String getIndustry() { return industry; }
     public void setIndustry(String industry) { this.industry = industry; }
 
-    // FIXED: Handle empty strings for dates
     public String getStartDate() { return startDate; }
     public void setStartDate(String startDate) {
-        // Convert empty string to null
         this.startDate = (startDate == null || startDate.trim().isEmpty()) ? null : startDate;
     }
 
     public String getEndDate() { return endDate; }
     public void setEndDate(String endDate) {
-        // Convert empty string to null
         this.endDate = (endDate == null || endDate.trim().isEmpty()) ? null : endDate;
     }
 

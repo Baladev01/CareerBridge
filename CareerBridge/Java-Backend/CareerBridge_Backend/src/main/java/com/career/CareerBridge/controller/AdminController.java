@@ -1,4 +1,3 @@
-// AdminController.java
 package com.career.CareerBridge.controller;
 
 import com.career.CareerBridge.dto.AdminForgotPasswordRequest;
@@ -76,7 +75,6 @@ public class AdminController {
             if (loginResult.get("success").equals(true)) {
                 Admin admin = (Admin) loginResult.get("admin");
                 
-                // Create admin response
                 Map<String, Object> adminData = new HashMap<>();
                 adminData.put("id", admin.getId());
                 adminData.put("firstName", admin.getFirstName());
@@ -109,7 +107,6 @@ public class AdminController {
         }
     }
 
- // AdminController.java - Verify Email Endpoint
     @PostMapping("/verify-email")
     public ResponseEntity<Map<String, Object>> verifyEmail(@RequestBody Map<String, String> request) {
         Map<String, Object> response = new HashMap<>();

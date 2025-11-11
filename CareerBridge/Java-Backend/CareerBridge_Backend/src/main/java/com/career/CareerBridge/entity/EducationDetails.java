@@ -193,16 +193,13 @@ public class EducationDetails {
     public Double getPercentage() { return percentage; }
     public void setPercentage(Double percentage) { this.percentage = percentage; }
     
-    // FIXED: Handle empty strings for dates
     public String getStartDate() { return startDate; }
     public void setStartDate(String startDate) {
-        // Convert empty string to null
         this.startDate = (startDate == null || startDate.trim().isEmpty()) ? null : startDate;
     }
     
     public String getEndDate() { return endDate; }
     public void setEndDate(String endDate) {
-        // Convert empty string to null
         this.endDate = (endDate == null || endDate.trim().isEmpty()) ? null : endDate;
     }
     

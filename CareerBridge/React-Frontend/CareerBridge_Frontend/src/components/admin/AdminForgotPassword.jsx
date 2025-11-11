@@ -12,7 +12,6 @@ const AdminForgotPassword = () => {
   const [typedText, setTypedText] = useState('');
   const successMessage = "✅ Email verified! Redirecting to reset password...";
 
-  // Typing animation effect
   React.useEffect(() => {
     if (success) {
       let index = 0;

@@ -40,7 +40,6 @@ public class EducationDetailsService {
         }
     }
 
-    // ✅ FIXED: Always create NEW record for POST /save
     public EducationDetails saveEducationDetails(EducationDetails details,
                                                  MultipartFile tenthMarksheet,
                                                  MultipartFile twelfthMarksheet,
@@ -63,7 +62,6 @@ public class EducationDetailsService {
         return saved;
     }
     
-    // ✅ Method for update (used by PUT /update)
     public EducationDetails updateEducationDetails(EducationDetails details) {
         try {
             logger.info("Updating education details for ID: {}", details.getId());
@@ -160,10 +158,8 @@ public class EducationDetailsService {
                     existing.setAdditionalCertifications(details.getAdditionalCertifications());
                 }
                 
-                // Update the timestamp
                 existing.setUpdatedAt(LocalDateTime.now());
                 
-                // Save the updated entity
                 EducationDetails updated = repository.save(existing);
                 logger.info("Successfully updated education details for ID: {}", updated.getId());
                 return updated;

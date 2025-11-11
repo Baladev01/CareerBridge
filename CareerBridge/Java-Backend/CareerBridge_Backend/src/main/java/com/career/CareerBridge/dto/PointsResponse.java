@@ -1,4 +1,3 @@
-// dto/PointsResponse.java
 package com.career.CareerBridge.dto;
 
 public class PointsResponse {
@@ -25,7 +24,6 @@ public class PointsResponse {
     public PointsData getData() { return data; }
     public void setData(PointsData data) { this.data = data; }
 
-    // Static factory methods
     public static PointsResponse success(String message, PointsData data) {
         return new PointsResponse(true, message, data);
     }

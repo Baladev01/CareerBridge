@@ -38,7 +38,6 @@ public class PersonalDetailsService {
         }
     }
 
-    // ✅ FIXED: Always create NEW record for POST /save
     public PersonalDetails savePersonalDetails(PersonalDetails details, MultipartFile profilePhoto) throws IOException {
         Long userId = details.getUserId();
         String name = details.getName();
@@ -47,7 +46,6 @@ public class PersonalDetailsService {
         logger.info("Creating NEW personal record for User: {}, Name: {}, Email: {}", 
                    userId, name, email);
         
-        // ✅ ALWAYS CREATE NEW RECORD for POST /save (remove existing check)
         handleFileUploads(details, profilePhoto);
         details.setCreatedAt(LocalDateTime.now());
         details.setUpdatedAt(LocalDateTime.now());
@@ -138,7 +136,6 @@ public class PersonalDetailsService {
     }
    
 
-    // ✅ ADD: Method to get full profile photo URL
     public String getProfilePhotoUrl(Long userId) {
         Optional<PersonalDetails> details = repository.findByUserId(userId);
         return details.map(PersonalDetails::getProfilePhoto).orElse(null);

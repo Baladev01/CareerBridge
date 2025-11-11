@@ -1,4 +1,3 @@
-// controller/BankAccountController.java
 package com.career.CareerBridge.controller;
 
 import com.career.CareerBridge.entity.BankAccount;
@@ -35,7 +34,6 @@ public class BankAccountController {
             
             logger.info("Saving bank account for User ID: {}", userId);
             
-            // Validate bank account
             if (bankAccount.getBankName() == null || bankAccount.getAccountHolder() == null || 
                 bankAccount.getAccountNumber() == null || bankAccount.getIfscCode() == null) {
                 return errorResponse("All bank account details are required");

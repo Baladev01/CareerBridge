@@ -1,4 +1,3 @@
-// Admin.java
 package com.career.CareerBridge.entity;
 
 import jakarta.persistence.*;

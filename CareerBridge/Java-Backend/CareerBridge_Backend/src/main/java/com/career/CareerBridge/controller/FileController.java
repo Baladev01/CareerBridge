@@ -22,13 +22,13 @@ public class FileController {
     @GetMapping("/personal-documents/{filename:.+}")
     public ResponseEntity<Resource> servePersonalDocument(@PathVariable String filename) {
         try {
-            // Resolve the file path
+          
             Path filePath = Paths.get("uploads/personal-documents").resolve(filename).normalize();
             Resource resource = new UrlResource(filePath.toUri());
             
-            // Check if file exists and is readable
+            
             if (resource.exists() && resource.isReadable()) {
-                // Determine content type dynamically
+               
                 String contentType = determineContentType(filename);
                 
                 return ResponseEntity.ok()
